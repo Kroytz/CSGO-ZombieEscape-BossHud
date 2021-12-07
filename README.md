@@ -1,1 +1,14 @@
 # CSGO-ZombieEscape-BossHud
+
+Original work by [AntiTeal](https://forums.alliedmods.net/member.php?u=263656), edited by me
+
+[[ANY / ZR?] Breakable / Boss HUD](https://forums.alliedmods.net/showthread.php?t=302675)
+
+Changelog:
+Removed command 
+```sm_currenthp (ADMFLAG_GENERIC) - Shows the current hud entity's full targetname, index, and health.```
+```sm_subtracthp <health> (ADMFLAG_GENERIC) - Subtracts health / value from the current entity.```
+```sm_addhp <health> (ADMFLAG_GENERIC) - Adds health / value from the current entity.```
+
+Support multiple hp bar
+Add ETA display
