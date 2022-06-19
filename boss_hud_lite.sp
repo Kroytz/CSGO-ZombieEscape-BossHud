@@ -4,7 +4,6 @@
 #include <sdktools>
 #include <sdkhooks>
 #include <clientprefs>
-#include <zombiereloaded>
 #include <csgocolors_fix>
 
 #undef REQUIRE_EXTENSIONS
@@ -905,7 +904,7 @@ public void HUD_BossNoBars(int id, char[] szMessage, int len)
 		else if(bosses[id].iHP >= 33) colorh = "ffff00";
 		else colorh = "ff0000";
 
-		Format(message, sizeof(message), "►[<font color='" ... COLOR_BOSSNAME ... "'>%s</font>]◄ HP: <font class='fontSize-xl' font color='#%s'>%d</font>ETA: %.1fs ", bosses[id].szDisplayName, colorh, bosses[id].iHP, flETA);
+		Format(message, sizeof(message), "►[<font color='" ... COLOR_BOSSNAME ... "'>%s</font>]◄\nETA: %.1fs  HP: <font class='fontSize-xl' font color='#%s'>%d</font>", bosses[id].szDisplayName, flETA, colorh, bosses[id].iHP);
 	}
 	else {
 		if(percentLeft > 100)
@@ -916,7 +915,7 @@ public void HUD_BossNoBars(int id, char[] szMessage, int len)
 		else if(percentLeft >= 33) colorh = "ffff00";
 		else colorh = "ff0000";
 
-		Format(message, sizeof(message), "►[<font color='" ... COLOR_BOSSNAME ... "'>%s</font>]◄ [%d%%] HP: <font class='fontSize-xl' font color='#%s'>%d</font>ETA: %.2f", bosses[id].szDisplayName, percentLeft, colorh, bosses[id].iHP, flETA);
+		Format(message, sizeof(message), "►[<font color='" ... COLOR_BOSSNAME ... "'>%s</font>]◄ [%d%%]\nETA: %.1fs  HP: <font class='fontSize-xl' font color='#%s'>%d</font>", bosses[id].szDisplayName, percentLeft, flETA, colorh, bosses[id].iHP);
 	}
 
 	StrCat(szMessage, len, message);
@@ -960,7 +959,7 @@ public void HUD_BossForceBars(int id, char[] szMessage, int len) {
 		if(bosses[id].iHP >= 66) colorh = "00FF00";
 		else if(bosses[id].iHP >= 33) colorh = "ffff00";
 		else colorh = "ff0000";
-		Format(message, sizeof(message), "►[<font color='" ... COLOR_BOSSNAME ... "'>%s</font>]◄ HP: <font class='fontSize-xl' font color='#%s'>%d</font>\n<font class='%s' color='%s'>ETA: %.1fs ", bosses[id].szDisplayName, colorh, bosses[id].iHP, circleClass, circleColor, flETA);
+		Format(message, sizeof(message), "►[<font color='" ... COLOR_BOSSNAME ... "'>%s</font>]◄\nETA: %.1fs  HP: <font class='fontSize-xl' font color='#%s'>%d</font>\n<font class='%s' color='%s'>", bosses[id].szDisplayName, flETA, colorh, bosses[id].iHP, circleClass, circleColor);
 	}
 	else {
 		if(percentLeft > 100)
@@ -970,7 +969,7 @@ public void HUD_BossForceBars(int id, char[] szMessage, int len) {
 		if(percentLeft >= 66) colorh = "00FF00";
 		else if(percentLeft >= 33) colorh = "ffff00";
 		else colorh = "ff0000";
-		Format(message, sizeof(message), "►[<font color='" ... COLOR_BOSSNAME ... "'>%s</font>]◄ [%d%%%%] HP: <font class='fontSize-xl' font color='#%s'>%d</font>\n<font class='%s' color='%s'>ETA: %.1fs ", bosses[id].szDisplayName, percentLeft, colorh, bosses[id].iHP, circleClass, circleColor, flETA);
+		Format(message, sizeof(message), "►[<font color='" ... COLOR_BOSSNAME ... "'>%s</font>]◄ [%d%%%%]\nETA: %.1fs  HP: <font class='fontSize-xl' font color='#%s'>%d</font>\n<font class='%s' color='%s'>", bosses[id].szDisplayName, percentLeft, flETA, colorh, bosses[id].iHP, circleClass, circleColor);
 	}
 
 	for (int i = 0; i < barCount; i++)
@@ -1038,7 +1037,7 @@ public void HUD_BossWithBars(int id, char[] szMessage, int len) {
 		if(totalHP >= 66) colorh = "00FF00";
 		else if(totalHP >= 33) colorh = "ffff00";
 		else colorh = "ff0000";
-		Format(message, sizeof(message), "►[<font color='" ... COLOR_BOSSNAME ... "'>%s</font>]◄ HP: <font class='fontSize-xl' font color='#%s'>%d</font>\n<font class='%s' color='%s'>ETA: %.1fs ", bosses[id].szDisplayName, colorh, totalHP, circleClass, circleColor, flETA);
+		Format(message, sizeof(message), "►[<font color='" ... COLOR_BOSSNAME ... "'>%s</font>]◄\nETA: %.1fs  HP: <font class='fontSize-xl' font color='#%s'>%d</font>\n<font class='%s' color='%s'>", bosses[id].szDisplayName, flETA, colorh, totalHP, circleClass, circleColor);
 	}
 	else {
 		if(percentLeft > 100)
@@ -1048,7 +1047,7 @@ public void HUD_BossWithBars(int id, char[] szMessage, int len) {
 		if(percentLeft >= 66) colorh = "00FF00";
 		else if(percentLeft >= 33) colorh = "ffff00";
 		else colorh = "ff0000";
-		Format(message, sizeof(message), "►[<font color='" ... COLOR_BOSSNAME ... "'>%s</font>]◄ [%d%%] HP: <font class='fontSize-xl' font color='#%s'>%d</font>\n<font class='%s' color='%s'>ETA: %.1fs ", bosses[id].szDisplayName, percentLeft, colorh, totalHP, circleClass, circleColor, flETA);
+		Format(message, sizeof(message), "►[<font color='" ... COLOR_BOSSNAME ... "'>%s</font>]◄ [%d%%]\nETA: %.1fs  HP: <font class='fontSize-xl' font color='#%s'>%d</font>\n<font class='%s' color='%s'>", bosses[id].szDisplayName, percentLeft, flETA, colorh, totalHP, circleClass, circleColor);
 	}
 
 	for (int i = 0; i < bosses[id].iCurrentBars; i++) {
