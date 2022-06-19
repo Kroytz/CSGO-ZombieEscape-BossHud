@@ -2,7 +2,7 @@
 ## bhud2.sp
 Original work by [AntiTeal](https://forums.alliedmods.net/member.php?u=263656), edited by me
 
-[[ANY / ZR?] Breakable / Boss HUD](https://forums.alliedmods.net/showthread.php?t=302675)
+[Alliedmods: [ANY / ZR?] Breakable / Boss HUD](https://forums.alliedmods.net/showthread.php?t=302675)
 
 Changelog:
 Removed command  
@@ -14,10 +14,10 @@ Support multiple hp bar
 Add ETA display
 
 ******
-## boss_hud_lite.sp
+## boss_hud_lite.sp (RECOMMAND)
 Original work by [Anubis](https://github.com/Stewart-Anubis), edited by me  
 
-[Zr-Breakable-Boss-HUD](https://github.com/Stewart-Anubis/Zr-Breakable-Boss-HUD)  
+[Github: Zr-Breakable-Boss-HUD](https://github.com/Stewart-Anubis/Zr-Breakable-Boss-HUD)  
 
 Changes:
 Removed command  
