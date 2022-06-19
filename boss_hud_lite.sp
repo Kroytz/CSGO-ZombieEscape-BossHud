@@ -44,6 +44,10 @@ public Plugin myinfo =
 // any breakables above this HP won't be triggered
 #define MAX_BREAKABLE_HP 900000
 
+// Method 1: Calculated from the beginning of the boss battle
+// Method 2: Based on damage between each Think
+#define ETA_CALC_METHOD_BEGINNING // Comment to use method 2
+
 enum HPType 
 {
 	decreasing,
@@ -77,6 +81,10 @@ enum struct Boss
 
 	int iDamage[MAXPLAYERS+1];
 	int iTotalHits;
+
+#if !defined ETA_CALC_METHOD_BEGINNING
+	int iLastThinkHP;
+#endif
 
 	bool bDead;
 	bool bDeadInit;
@@ -874,10 +882,19 @@ public void ResetBoss(int id) {
 public void HUD_BossNoBars(int id, char[] szMessage, int len) 
 {
 	int percentLeft = RoundFloat((bosses[id].iHP * 1.0 / bosses[id].iHighestHP) * 100);
+#if defined ETA_CALC_METHOD_BEGINNING
+	// 方法1：从Boss战开始算秒均(掉人后不准确但数值平滑)
 	int totalHP = bosses[id].iHP;
 	int iTimePassed = GetTime() - bosses[id].iFirstActive;
 	int damageDealtDuringFight = bosses[id].iHighestHP - bosses[id].iHP;
 	float flETA = float(totalHP) / (float(damageDealtDuringFight) / float(iTimePassed)); // totalHP / (damageDealt)
+#else
+	// 方法2：Think间的秒均(较为准确但幅度波动大)
+	int damageDealtDuringFight = bosses[id].iLastThinkHP - bosses[id].iHP;
+	float flETA = float(bosses[id].iHP) / (float(damageDealtDuringFight) / g_fVUpdateTime); // totalHP / (damageDealt)
+	bosses[id].iLastThinkHP = bosses[id].iHP;
+#endif
+
 	if (flETA < 0.0)
 		flETA = 1145141919.0; // 2147483647.0
 
@@ -888,7 +905,7 @@ public void HUD_BossNoBars(int id, char[] szMessage, int len)
 		else if(bosses[id].iHP >= 33) colorh = "ffff00";
 		else colorh = "ff0000";
 
-		Format(message, sizeof(message), "►[<font color='" ... COLOR_BOSSNAME ... "'>%s</font>]◄ HP: <font class='fontSize-xl' font color='#%s'>%d</font>\nETA: %.2f", bosses[id].szDisplayName, colorh, bosses[id].iHP, flETA);
+		Format(message, sizeof(message), "►[<font color='" ... COLOR_BOSSNAME ... "'>%s</font>]◄ HP: <font class='fontSize-xl' font color='#%s'>%d</font>ETA: %.1fs ", bosses[id].szDisplayName, colorh, bosses[id].iHP, flETA);
 	}
 	else {
 		if(percentLeft > 100)
@@ -909,10 +926,15 @@ public void HUD_BossForceBars(int id, char[] szMessage, int len) {
 	int percentLeft = RoundFloat((bosses[id].iHP * 1.0 / bosses[id].iHighestHP) * 100);
 	int forceBars = bosses[id].iForceBars;
 
-	int totalHP = bosses[id].iHP;
+#if defined ETA_CALC_METHOD_BEGINNING
 	int iTimePassed = GetTime() - bosses[id].iFirstActive;
 	int damageDealtDuringFight = bosses[id].iHighestHP - bosses[id].iHP;
-	float flETA = float(totalHP) / (float(damageDealtDuringFight) / float(iTimePassed)); // totalHP / (damageDealt)
+	float flETA = float(bosses[id].iHP) / (float(damageDealtDuringFight) / float(iTimePassed)); // totalHP / (damageDealt)
+#else
+	int damageDealtDuringFight = bosses[id].iLastThinkHP - bosses[id].iHP;
+	float flETA = float(bosses[id].iHP) / (float(damageDealtDuringFight) / g_fVUpdateTime);
+	bosses[id].iLastThinkHP = bosses[id].iHP;
+#endif
 	if (flETA < 0.0)
 		flETA = 1145141919.0; // 2147483647.0
 
@@ -938,7 +960,7 @@ public void HUD_BossForceBars(int id, char[] szMessage, int len) {
 		if(bosses[id].iHP >= 66) colorh = "00FF00";
 		else if(bosses[id].iHP >= 33) colorh = "ffff00";
 		else colorh = "ff0000";
-		Format(message, sizeof(message), "►[<font color='" ... COLOR_BOSSNAME ... "'>%s</font>]◄ HP: <font class='fontSize-xl' font color='#%s'>%d</font>\n<font class='%s' color='%s'>\nETA: %.2f", bosses[id].szDisplayName, colorh, bosses[id].iHP, circleClass, circleColor, flETA);
+		Format(message, sizeof(message), "►[<font color='" ... COLOR_BOSSNAME ... "'>%s</font>]◄ HP: <font class='fontSize-xl' font color='#%s'>%d</font>\n<font class='%s' color='%s'>ETA: %.1fs ", bosses[id].szDisplayName, colorh, bosses[id].iHP, circleClass, circleColor, flETA);
 	}
 	else {
 		if(percentLeft > 100)
@@ -948,7 +970,7 @@ public void HUD_BossForceBars(int id, char[] szMessage, int len) {
 		if(percentLeft >= 66) colorh = "00FF00";
 		else if(percentLeft >= 33) colorh = "ffff00";
 		else colorh = "ff0000";
-		Format(message, sizeof(message), "►[<font color='" ... COLOR_BOSSNAME ... "'>%s</font>]◄ [%d%%%%] HP: <font class='fontSize-xl' font color='#%s'>%d</font>\n<font class='%s' color='%s'>\nETA: %.2f", bosses[id].szDisplayName, percentLeft, colorh, bosses[id].iHP, circleClass, circleColor, flETA);
+		Format(message, sizeof(message), "►[<font color='" ... COLOR_BOSSNAME ... "'>%s</font>]◄ [%d%%%%] HP: <font class='fontSize-xl' font color='#%s'>%d</font>\n<font class='%s' color='%s'>ETA: %.1fs ", bosses[id].szDisplayName, percentLeft, colorh, bosses[id].iHP, circleClass, circleColor, flETA);
 	}
 
 	for (int i = 0; i < barCount; i++)
@@ -972,11 +994,14 @@ public void HUD_BossWithBars(int id, char[] szMessage, int len) {
 	else
 		Format(circleClass, sizeof(circleClass), "fontSize-xl");
 
-	int totalHP = 0, percentLeft = 0, damageDealtDuringFight = 0;
+	int totalHP = 0, percentLeft = 0;
+	int damageDealtDuringFight = 0;
 	if (bosses[id].iInitHP != 0) {
 		totalHP = bosses[id].iHP + (barsRemaining * bosses[id].iInitHP);
 		percentLeft = RoundFloat((totalHP * 1.0 / (bosses[id].iMaxBars * bosses[id].iInitHP)) * 100);
+#if defined ETA_CALC_METHOD_BEGINNING
 		damageDealtDuringFight = (bosses[id].iMaxBars * bosses[id].iInitHP) - totalHP;
+#endif
 	}
 	else {
 		totalHP = bosses[id].iHP + (barsRemaining * bosses[id].iHighestHP);
@@ -984,11 +1009,18 @@ public void HUD_BossWithBars(int id, char[] szMessage, int len) {
 			bosses[id].iHighestTotalHP = totalHP;
 		
 		percentLeft = RoundFloat((totalHP * 1.0 / bosses[id].iHighestTotalHP) * 100);
+#if defined ETA_CALC_METHOD_BEGINNING
 		damageDealtDuringFight = bosses[id].iHighestTotalHP - totalHP;
+#endif
 	}
-
+#if defined ETA_CALC_METHOD_BEGINNING
 	int iTimePassed = GetTime() - bosses[id].iFirstActive;
 	float flETA = float(totalHP) / (float(damageDealtDuringFight) / float(iTimePassed)); // totalHP / (damageDealt)
+#else
+	damageDealtDuringFight = bosses[id].iLastThinkHP - totalHP;
+	float flETA = float(totalHP) / (float(damageDealtDuringFight) / g_fVUpdateTime);
+	bosses[id].iLastThinkHP = totalHP;
+#endif
 	if (flETA < 0.0)
 		flETA = 1145141919.0; // 2147483647.0
 
@@ -1006,7 +1038,7 @@ public void HUD_BossWithBars(int id, char[] szMessage, int len) {
 		if(totalHP >= 66) colorh = "00FF00";
 		else if(totalHP >= 33) colorh = "ffff00";
 		else colorh = "ff0000";
-		Format(message, sizeof(message), "►[<font color='" ... COLOR_BOSSNAME ... "'>%s</font>]◄ HP: <font class='fontSize-xl' font color='#%s'>%d</font>\n<font class='%s' color='%s'>\nETA: %.2f", bosses[id].szDisplayName, colorh, totalHP, circleClass, circleColor, flETA);
+		Format(message, sizeof(message), "►[<font color='" ... COLOR_BOSSNAME ... "'>%s</font>]◄ HP: <font class='fontSize-xl' font color='#%s'>%d</font>\n<font class='%s' color='%s'>ETA: %.1fs ", bosses[id].szDisplayName, colorh, totalHP, circleClass, circleColor, flETA);
 	}
 	else {
 		if(percentLeft > 100)
@@ -1016,7 +1048,7 @@ public void HUD_BossWithBars(int id, char[] szMessage, int len) {
 		if(percentLeft >= 66) colorh = "00FF00";
 		else if(percentLeft >= 33) colorh = "ffff00";
 		else colorh = "ff0000";
-		Format(message, sizeof(message), "►[<font color='" ... COLOR_BOSSNAME ... "'>%s</font>]◄ [%d%%] HP: <font class='fontSize-xl' font color='#%s'>%d</font>\n<font class='%s' color='%s'>\nETA: %.2f", bosses[id].szDisplayName, percentLeft, colorh, totalHP, circleClass, circleColor, flETA);
+		Format(message, sizeof(message), "►[<font color='" ... COLOR_BOSSNAME ... "'>%s</font>]◄ [%d%%] HP: <font class='fontSize-xl' font color='#%s'>%d</font>\n<font class='%s' color='%s'>ETA: %.1fs ", bosses[id].szDisplayName, percentLeft, colorh, totalHP, circleClass, circleColor, flETA);
 	}
 
 	for (int i = 0; i < bosses[id].iCurrentBars; i++) {
