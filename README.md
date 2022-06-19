@@ -25,5 +25,5 @@ Removed command
 ```sm_boss_hud_zombie_hitmarker_vmt - Path to zombie hitmarker's vmt. materials/```  
 ```sm_boss_hud_hitmarker_sound - Sound Hitmarker. sound/```  
 
-Add ETA display
+Add ETA display  
 Support [GFLClan configuration files](https://github.com/gflclan-cs-go-ze/ZE-Configs/tree/master/bosshud)
